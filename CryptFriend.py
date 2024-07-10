@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import easygui
+from tabulate import tabulate
 
 wrkdir = os.path.dirname(os.path.realpath(__file__))
 
@@ -51,7 +52,12 @@ if sel == 'Decrypt' or sel == 'DecryptToFile':
     print('Decrypt Document')
     output = decryptBase(pwd)
     if sel != 'DecryptToFile':
-        print(output.decode())
+        txtOutput = output.decode()
+        fineLines = []
+        for line in txtOutput.splitlines():
+            fineLines.append(line.split(';'))
+        header = fineLines.pop(0)
+        print(tabulate(fineLines, headers=header, tablefmt="pretty"))
     else:
         basefile = open(wrkdir+ '\\base.txt', 'w')
         basefile.write(output.decode())
