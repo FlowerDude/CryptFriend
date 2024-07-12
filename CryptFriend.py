@@ -37,11 +37,23 @@ def decryptBase(password):
     f = Fernet(key)
     return f.decrypt(inpt.read())
 
+def gatherPwd():
+    pwd = easygui.passwordbox('Encryption password', 'Encryption', 'droggelbecher')
+    if pwd == None or pwd == '':
+        return None
+    pwd2 = easygui.passwordbox('Re-enter password', 'Encryption', 'droggelbecher')
+    if pwd == pwd2:
+        return pwd
+    easygui.msgbox('Password missmatch ! Retry', 'Missmatch !')
+    return gatherPwd()
+
 sel = easygui.choicebox('De-/Encrypt', 'Start', ['Encrypt', 'Decrypt', 'DecryptToFile'])
 
 if sel == 'Encrypt':
     salt = os.urandom(16)
-    pwd = easygui.passwordbox('Encryption password', 'Encryption', 'droggelbecher')
+    pwd = gatherPwd()
+    if pwd == None:
+        exit(0)
     print('Encrypt new Document')
     encryptBase(pwd, salt)
     print('Done !')
