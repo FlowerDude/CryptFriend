@@ -1,5 +1,6 @@
 import base64
 import os
+from cryptography.fernet import InvalidToken
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -35,8 +36,10 @@ def decryptBase(password):
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length = 32, salt = salt, iterations=480000)
     key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
     f = Fernet(key)
-    return f.decrypt(inpt.read())
-
+    try:
+        return f.decrypt(inpt.read())
+    except InvalidToken:
+        print('Wrong Password !')
 def gatherPwd():
     pwd = easygui.passwordbox('Encryption password', 'Encryption', 'droggelbecher')
     if pwd == None or pwd == '':
@@ -63,6 +66,8 @@ if sel == 'Decrypt' or sel == 'DecryptToFile':
     pwd = easygui.passwordbox('Decryption password', 'Decryption', 'droggelbecher')
     print('Decrypt Document')
     output = decryptBase(pwd)
+    if output == None:
+        exit(0)
     if sel != 'DecryptToFile':
         txtOutput = output.decode()
         fineLines = []
